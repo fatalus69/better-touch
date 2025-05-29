@@ -6,6 +6,9 @@ import "core:strings"
 import "core:path/filepath"
 
 verbose: bool = false;
+access_time: bool = false;
+modification_time: bool = false;
+time: bool = false;
 
 main :: proc() {
     if len(os.args) == 1 {
@@ -21,10 +24,29 @@ main :: proc() {
         }
         file, options: string;
         if strings.has_prefix(arg, "-") {
+            for char in arg {
+                if char == "-" {
+                    continue;
+                }
+
+                if char == "v" {
+                    verbose = true;
+                } else if char == "a" {
+                    access_time = true;
+                } else if char == "m" {
+                    modification_time = true;
+                } else if char == "t" {
+                    time = true;
+                } else {
+                    fmt.println("Invalid argument", char);
+                    os.exit(1);
+                }
+            }
             options = arg;
         } else {
             file = arg;
         }
+        //default if there are no options present
         createFile(file);
     }
 }
@@ -35,8 +57,14 @@ createFile :: proc(filename: string) {
         createDirectories(dir);
     }
 
+    if os.is_file(filename) {
+        if verbose == true {
+            fmt.println("WARN: File", filename, "already exists. Skipping...")
+        }
+        return;
+    }
+
     file, err := os.open(filename, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0o644);
-    
     if err != os.ERROR_NONE {
         fmt.println("Error creating file", filename);
         os.exit(1);
@@ -64,6 +92,10 @@ createDirectories :: proc(pathname: string) {
         current = filepath.join({current, part});
 
         if !os.is_file(current) {
+            if verbose == true {
+                fmt.println("Creating directory", current);
+            }
+            //TODO: check if dir already exists
             err := os.make_directory(current, 0o755);
             if err != os.ERROR_NONE {
                 fmt.println("Error creating directory", current);
