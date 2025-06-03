@@ -22,27 +22,29 @@ main :: proc() {
             first_arg_proccessed = true;
             continue;
         }
-        file, options: string;
+        file: string;
         if strings.has_prefix(arg, "-") {
             for char in arg {
-                if char == "-" {
+                if char == '-' {
                     continue;
                 }
 
-                if char == "v" {
+                if char == 'v' {
                     verbose = true;
-                } else if char == "a" {
-                    access_time = true;
-                } else if char == "m" {
-                    modification_time = true;
-                } else if char == "t" {
-                    time = true;
-                } else {
-                    fmt.println("Invalid argument", char);
+                } 
+                //TODO: Add functionality:
+                // else if char == 'a' {
+                //     access_time = true;
+                // } else if char == 'm' {
+                //     modification_time = true;
+                // } else if char == 't' {
+                //     time = true;
+                // } 
+                else {
+                    fmt.println("Unrecognized option ", arg);
                     os.exit(1);
                 }
             }
-            options = arg;
         } else {
             file = arg;
         }
@@ -59,8 +61,16 @@ createFile :: proc(filename: string) {
 
     if os.is_file(filename) {
         if verbose == true {
-            fmt.println("WARN: File", filename, "already exists. Skipping...")
+            fmt.println("File", filename, "already exists. ")
         }
+        //update access time nonetheless
+        file, err := os.open(filename);
+        if err != os.ERROR_NONE {
+            fmt.println("Error creating file", filename);
+            os.exit(1);
+        }
+        os.close(file);
+
         return;
     }
 
@@ -92,10 +102,14 @@ createDirectories :: proc(pathname: string) {
         current = filepath.join({current, part});
 
         if !os.is_file(current) {
+            if os.is_dir(current) {
+                continue;
+            }
+            
             if verbose == true {
                 fmt.println("Creating directory", current);
             }
-            //TODO: check if dir already exists
+
             err := os.make_directory(current, 0o755);
             if err != os.ERROR_NONE {
                 fmt.println("Error creating directory", current);
