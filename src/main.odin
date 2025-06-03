@@ -31,7 +31,10 @@ main :: proc() {
 
                 if char == 'v' {
                     verbose = true;
-                } 
+                } else {
+                    fmt.println("Unrecognized option ", arg);
+                    os.exit(1);
+                }
                 //TODO: Add functionality:
                 // else if char == 'a' {
                 //     access_time = true;
@@ -40,10 +43,6 @@ main :: proc() {
                 // } else if char == 't' {
                 //     time = true;
                 // } 
-                else {
-                    fmt.println("Unrecognized option ", arg);
-                    os.exit(1);
-                }
             }
         } else {
             file = arg;
