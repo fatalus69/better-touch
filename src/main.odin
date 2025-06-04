@@ -35,19 +35,11 @@ main :: proc() {
                     fmt.println("Unrecognized option ", arg);
                     os.exit(1);
                 }
-                //TODO: Add functionality:
-                // else if char == 'a' {
-                //     access_time = true;
-                // } else if char == 'm' {
-                //     modification_time = true;
-                // } else if char == 't' {
-                //     time = true;
-                // } 
             }
         } else {
             file = arg;
         }
-        //default if there are no options present
+
         createFile(file);
     }
 }
