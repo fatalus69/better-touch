@@ -1,4 +1,4 @@
-<p style="text-align: center;">BETTER-TOUCH</p>
+## <p style="text-align: center;">BETTER-TOUCH</p>
 
 **A smarter `touch` command** — `better-touch` automatically creates any missing directories in the path before creating the file, so you don't have to.
 
