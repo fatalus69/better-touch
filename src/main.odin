@@ -5,6 +5,8 @@ import "core:fmt"
 import "core:strings"
 import "core:path/filepath"
 
+VERSION: string = "1.0.0";
+
 verbose: bool = false;
 access_time: bool = false;
 modification_time: bool = false;
@@ -22,6 +24,17 @@ main :: proc() {
             first_arg_proccessed = true;
             continue;
         }
+
+        if (arg == "--help" || arg == "-h") {
+            fmt.println("HELP");
+            os.exit(0);
+        }
+
+        if (arg == "--version" || arg == "-v") {
+            fmt.println("better-touch", VERSION);
+            os.exit(0);
+        }
+
         file: string;
         if strings.has_prefix(arg, "-") {
             for char in arg {
