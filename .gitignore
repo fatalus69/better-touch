@@ -1,1 +1,5 @@
 better-touch
+*.exe
+man/*.gz
+*.tar
+*.zip
