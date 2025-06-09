@@ -5,7 +5,7 @@ import "core:fmt"
 import "core:strings"
 import "core:path/filepath"
 
-VERSION: string = "1.0.0";
+VERSION: string = "1.1.0";
 
 verbose: bool = false;
 access_time: bool = false;
@@ -24,36 +24,34 @@ main :: proc() {
             first_arg_proccessed = true;
             continue;
         }
+        
+        checkForOptions(arg);
 
-        if (arg == "--help" || arg == "-h") {
-            fmt.println("HELP");
-            os.exit(0);
-        }
+        if !strings.has_prefix(arg, "-") {
+            filename: string = arg;
+            if access_time == true {
+                updateAccessTime(filename)
+            } else {
 
-        if (arg == "--version" || arg == "-v") {
-            fmt.println("better-touch", VERSION);
-            os.exit(0);
-        }
-
-        file: string;
-        if strings.has_prefix(arg, "-") {
-            for char in arg {
-                if char == '-' {
-                    continue;
-                }
-
-                if char == 'v' {
-                    verbose = true;
-                } else {
-                    fmt.println("Unrecognized option ", arg);
-                    os.exit(1);
-                }
+                createFile(filename);
             }
-        } else {
-            file = arg;
         }
+    }
+}
 
-        createFile(file);
+checkForOptions :: proc(arg: string) {
+    if (arg == "--help" || arg == "-h") {
+        fmt.println("man better-touch");
+        os.exit(0);
+    } else if (arg == "--version") {
+        fmt.println("better-touch", VERSION);
+        os.exit(0);
+    } else if (arg == "--verbose" || arg == "-v") {
+        verbose = true;
+        return;
+    } else if (arg == "--access-time" || arg == "-a") {
+        access_time = true;
+        return;
     }
 }
 
@@ -67,14 +65,11 @@ createFile :: proc(filename: string) {
         if verbose == true {
             fmt.println("File", filename, "already exists. ")
         }
-        //update access time nonetheless
+        // Still touch the file
         file, err := os.open(filename);
-        if err != os.ERROR_NONE {
-            fmt.println("Error creating file", filename);
-            os.exit(1);
+        if err == os.ERROR_NONE {
+            os.close(file);
         }
-        os.close(file);
-
         return;
     }
 
@@ -88,6 +83,23 @@ createFile :: proc(filename: string) {
         fmt.println("Successfully created file", filename)
     }
     defer os.close(file);
+}
+
+updateAccessTime :: proc(filename) {
+    if os.is_file(filename) {
+        // Touch the file
+        file, err := os.open(filename);
+        if err != os.ERROR_NONE {
+            fmt.println("Error updating access time for", filename);
+            os.exit(1);
+        }
+        defer os.close(file);
+        if verbose == true {
+            fmt.println("Updated access time for", filename);
+        }
+    } else {
+        createFile(filename);
+    }
 }
 
 createDirectories :: proc(pathname: string) {
