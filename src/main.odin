@@ -85,7 +85,7 @@ createFile :: proc(filename: string) {
     defer os.close(file);
 }
 
-updateAccessTime :: proc(filename) {
+updateAccessTime :: proc(filename: string) {
     if os.is_file(filename) {
         // Touch the file
         file, err := os.open(filename);
