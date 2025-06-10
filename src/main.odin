@@ -5,7 +5,8 @@ import "core:fmt"
 import "core:strings"
 import "core:path/filepath"
 
-VERSION: string = "1.1.0";
+VERSION :: "1.1.0";
+NAME :: "better-touch";
 
 verbose: bool = false;
 access_time: bool = false;
@@ -18,40 +19,46 @@ main :: proc() {
         os.exit(1);
     }
 
-    first_arg_proccessed : bool = false;
-    for arg in os.args {
-        if first_arg_proccessed == false {
-            first_arg_proccessed = true;
+    for arg, i in os.args {
+        if i == 0 {
             continue;
         }
-        
-        checkForOptions(arg);
 
-        if !strings.has_prefix(arg, "-") {
+        if strings.has_prefix(arg, "-") {
+            checkForOptions(arg, i);
+        } else {
             filename: string = arg;
             if access_time == true {
                 updateAccessTime(filename)
             } else {
-
                 createFile(filename);
             }
         }
     }
 }
 
-checkForOptions :: proc(arg: string) {
+checkForOptions :: proc(arg: string, index: int) {
+    //todo: multiple options in one arg
     if (arg == "--help" || arg == "-h") {
-        fmt.println("man better-touch");
+        help();
         os.exit(0);
-    } else if (arg == "--version") {
+    } else if (arg == "--version" || arg == "-v") {
         fmt.println("better-touch", VERSION);
         os.exit(0);
-    } else if (arg == "--verbose" || arg == "-v") {
+    } else if (arg == "--verbose" || arg == "-V") {
         verbose = true;
         return;
     } else if (arg == "--access-time" || arg == "-a") {
+        // isnt this the same as without any option?
         access_time = true;
         return;
+    } else if (arg == "--time" || arg == "-t") {
+        time = true;
+        time_string : string = os.args[index];
+        //TODO: Logic
+    } else {
+        string_arr: []string = {"Invalid option ", arg};
+        error(strings.concatenate(string_arr[:]));
     }
 }
 
@@ -68,8 +75,10 @@ createFile :: proc(filename: string) {
         // Still touch the file
         file, err := os.open(filename);
         if err == os.ERROR_NONE {
-            os.close(file);
+            fmt.println("Error touching file", filename);
+            os.exit(1);    
         }
+        os.close(file);
         return;
     }
 
@@ -133,4 +142,15 @@ createDirectories :: proc(pathname: string) {
             }
         }
     }
+}
+
+error :: proc(message: string) {
+    fmt.println(message);
+    fmt.println("Try", NAME, "--help for more information");
+    os.exit(1);
+}
+
+help :: proc() {
+    fmt.println("HELP");
+    os.exit(0);
 }
