@@ -21,3 +21,11 @@ sudo mv ./better-touch /usr/local/bin/
 ````sh
 ./build.sh
 ````
+- To build the release version simply run
+````sh
+./build.sh --release
+````
+- And install it by running 
+````sh
+./installers/install.sh
+````

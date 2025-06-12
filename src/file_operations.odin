@@ -7,7 +7,7 @@ import "core:path/filepath"
 
 createFile :: proc(filename: string) {
     dir := filepath.dir(filename);
-    if dir != "" {
+    if dir != "" && no_create == false {
         createDirectories(dir);
     }
 
@@ -15,7 +15,7 @@ createFile :: proc(filename: string) {
         if verbose == true {
             fmt.println("File", filename, "already exists. ")
         }
-        // Still touch the file
+        // touch the file nonetheless
         file, err := os.open(filename);
         if err == os.ERROR_NONE {
             fmt.println("Error touching file", filename);
@@ -25,16 +25,18 @@ createFile :: proc(filename: string) {
         return;
     }
 
-    file, err := os.open(filename, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0o644);
-    if err != os.ERROR_NONE {
-        fmt.println("Error creating file", filename);
-        os.exit(1);
+    if no_create == false {
+        file, err := os.open(filename, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0o644);
+        if err != os.ERROR_NONE {
+            fmt.println("Error creating file", filename);
+            os.exit(1);
+        }
+    
+        if verbose == true {
+            fmt.println("Successfully created file", filename)
+        }
+        defer os.close(file);
     }
-
-    if verbose == true {
-        fmt.println("Successfully created file", filename)
-    }
-    defer os.close(file);
 }
 
 updateAccessTime :: proc(filename: string) {
@@ -49,7 +51,7 @@ updateAccessTime :: proc(filename: string) {
         if verbose == true {
             fmt.println("Updated access time for", filename);
         }
-    } else {
+    } else if no_create == false {
         createFile(filename);
     }
 }

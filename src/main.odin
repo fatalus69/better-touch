@@ -12,6 +12,7 @@ verbose: bool = false;
 access_time: bool = false;
 modification_time: bool = false;
 time: bool = false;
+no_create: bool = false;
 
 main :: proc() {
     if len(os.args) == 1 {
@@ -25,11 +26,13 @@ main :: proc() {
         }
 
         if strings.has_prefix(arg, "-") {
-            checkForOptions(arg, i);
+            checkForOptions(arg);
         } else {
             filename: string = arg;
             if access_time == true {
                 updateAccessTime(filename)
+            } else if time == true{
+                modifyAccessTime(filename, os.args[i + 1]);
             } else {
                 createFile(filename);
             }
@@ -37,29 +40,58 @@ main :: proc() {
     }
 }
 
-checkForOptions :: proc(arg: string, index: int) {
-    //todo: multiple options in one arg
-    if (arg == "--help" || arg == "-h") {
-        help();
-        os.exit(0);
-    } else if (arg == "--version" || arg == "-v") {
-        fmt.println("better-touch", VERSION);
-        os.exit(0);
-    } else if (arg == "--verbose" || arg == "-V") {
-        verbose = true;
+checkForOptions :: proc(arg: string) {
+    if strings.has_prefix(arg, "--") {
+        if arg == "--help" {
+            help();
+            os.exit(0);
+        } else if arg == "--version" {
+            fmt.println("better-touch", VERSION);
+            os.exit(0);
+        } else if arg == "--verbose" {
+            verbose = true;
+        } else if arg == "--access-time" {
+            access_time = true;
+        } else if arg == "--time" {
+            time = true;
+        } else if arg == "--no-create" {
+            no_create = true;
+        } else {
+                string_arr: []string = {"Invalid option ", arg};
+                error(strings.concatenate(string_arr[:]));
+        }
+
         return;
-    } else if (arg == "--access-time" || arg == "-a") {
-        // isnt this the same as without any option?
-        access_time = true;
-        return;
-    } else if (arg == "--time" || arg == "-t") {
-        time = true;
-        time_string : string = os.args[index];
-        //TODO: Logic
-    } else {
-        string_arr: []string = {"Invalid option ", arg};
-        error(strings.concatenate(string_arr[:]));
     }
+
+    // TODO: options that cant be together
+    if strings.has_prefix(arg, "-") {
+        for i in 1..<len(arg) {
+            switch arg[i] {
+            case 'h':
+                help();
+                os.exit(0);
+            case 'v':
+                fmt.println("better-touch", VERSION);
+                os.exit(0);
+            case 'V':
+                verbose = true;
+            case 'a':
+                access_time = true;
+            case 't':
+                time = true;
+            case 'c':
+                no_create = true;
+            case:
+                string_arr: []string = {"Invalid option ", arg};
+                error(strings.concatenate(string_arr[:]));
+            }
+        }
+        return;
+    }
+
+    string_arr: []string = {"Invalid option ", arg};
+    error(strings.concatenate(string_arr[:]));
 }
 
 error :: proc(message: string) {
@@ -69,22 +101,29 @@ error :: proc(message: string) {
 }
 
 help :: proc() {
-    fmt.println(NAME, VERSION);
-    fmt.println("create a file and missing directories, like touch but smarter");
-    fmt.println(NAME, "[OPTIONS] [FILENAME]");
-    fmt.println("Filename:");
-    fmt.println("The file to modify access times or create.");
-    fmt.println("Options:");
-    fmt.println("-h, --help");
-    fmt.println("Show help.");
-    fmt.println("-V, --version");
-    fmt.println("Display current version.")
-    fmt.println("-v, --verbose");
-    fmt.println("Enable verbose output");
-    fmt.println("-a, --access-time");
-    fmt.println("Set access time to now.")
-    fmt.println("-t [time], --time [time]");
-    fmt.println("Set access time to a specific time.");
-
+    fmt.println(
+        NAME, " ", VERSION, "\n",
+        "A smarter alternative to 'touch' — creates files and missing directories.\n",
+        "\n",
+        "Usage:\n",
+        "\t", NAME, " [OPTIONS] [FILENAME]\n",
+        "\n",
+        "Filename:\n",
+        "\tSpecify the file whose access time should be modified, or which should be created.\n",
+        "\n",
+        "Options:\n",
+        "\t-h, --help\n",
+        "\t\tShow this help message and exit.\n",
+        "\t-V, --version\n",
+        "\t\tDisplay the current version.\n",
+        "\t-v, --verbose\n",
+        "\t\tEnable verbose output.\n",
+        "\t-a, --access-time\n",
+        "\t\tSet the access time to now.\n",
+        "\t-t [time], --time [time]\n",
+        "\t\tSet the access time to a specific time.\n",
+        "\t-c, --no-create\n",
+        "\t\tDo not create the file if it does not exist.\n"
+    );
     os.exit(0);
 }
