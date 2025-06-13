@@ -106,14 +106,14 @@ help :: proc() {
         "A smarter alternative to 'touch' — creates files and missing directories.\n",
         "\n",
         "Usage:\n",
-        "\t", NAME, " [OPTIONS] [FILENAME]\n",
+        "\t", NAME, " [OPTIONS] [FILENAME]...\n",
         "\n",
         "Filename:\n",
         "\tSpecify the file whose access time should be modified, or which should be created.\n",
         "\n",
         "Options:\n",
         "\t-h, --help\n",
-        "\t\tShow this help message and exit.\n",
+        "\t\tShow this help message.\n",
         "\t-V, --version\n",
         "\t\tDisplay the current version.\n",
         "\t-v, --verbose\n",
@@ -123,7 +123,7 @@ help :: proc() {
         "\t-t [time], --time [time]\n",
         "\t\tSet the access time to a specific time.\n",
         "\t-c, --no-create\n",
-        "\t\tDo not create the file if it does not exist.\n"
+        "\t\tDon't create a file if it does not exist.\n"
     );
     os.exit(0);
 }

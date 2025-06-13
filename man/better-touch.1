@@ -5,7 +5,7 @@ better-touch \- create a file and missing directories, like touch but smarter
 
 .SH SYNOPSIS
 .B better-touch
-[\fIOPTIONS\fR] [\fIFILENAME\fR]
+[\fIOPTIONS\fR] [\fIFILENAME\fR]...
 
 .SH DESCRIPTION
 \fBbetter-touch\fR is a small utility that behaves like the standard
@@ -16,11 +16,11 @@ file timestamps, it will also create any missing parent directories
 
 .TP
 \fB\-h\fR, \fB\-\-help\fR
-Show this help message and exit.
+Show help.
 
 .TP
 \fB\-V\fR, \fB\-\-version\fR
-Display the current version and exit.
+Display the current version.
 
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
@@ -36,7 +36,7 @@ Set the access time to a specific time. The time format should be compatible wit
 
 .TP
 \fB\-c\fR, \fB\-\-no-create\fR
-Do not create the file if it does not exist. Only modify access time if the file is already present.
+Don't create a file if it does not exist. Only modify access time if the file is already present.
 
 .SH AUTHOR
 https://github.com/fatalus69.
