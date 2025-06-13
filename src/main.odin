@@ -32,7 +32,7 @@ main :: proc() {
             if access_time == true {
                 updateAccessTime(filename)
             } else if time == true{
-                modifyAccessTime(filename, os.args[i + 1]);
+                modifyAccessTime(filename, os.args[i]);
             } else {
                 createFile(filename);
             }
@@ -57,8 +57,8 @@ checkForOptions :: proc(arg: string) {
         } else if arg == "--no-create" {
             no_create = true;
         } else {
-                string_arr: []string = {"Invalid option ", arg};
-                error(strings.concatenate(string_arr[:]));
+            string_arr: []string = {"Invalid option ", arg};
+            error(strings.concatenate(string_arr[:]));
         }
 
         return;
@@ -121,7 +121,7 @@ help :: proc() {
         "\t-a, --access-time\n",
         "\t\tSet the access time to now.\n",
         "\t-t [time], --time [time]\n",
-        "\t\tSet the access time to a specific time.\n",
+        "\t\tSet the access time to a specific time in ISO 8601 format.\n",
         "\t-c, --no-create\n",
         "\t\tDon't create a file if it does not exist.\n"
     );

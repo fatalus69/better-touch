@@ -4,6 +4,18 @@ import "core:os"
 import "core:fmt"
 import "core:strings"
 import "core:path/filepath"
+import "core:c/libc"
+import "core:strconv"
+
+UTIME_NOW  :: -1;
+UTIME_OMIT :: -2;
+
+AT_FDCWD :: -100;
+
+Timespec :: struct {
+    tv_sec:  i64,
+    tv_nsec: i64,
+}
 
 createFile :: proc(filename: string) {
     dir := filepath.dir(filename);
@@ -90,6 +102,55 @@ createDirectories :: proc(pathname: string) {
 }
 
 modifyAccessTime :: proc(filename: string, time_string: string) {
+    time_value: string = time_string;
+    formatted_date: libc.tm = validateTimeAndFormat(time_value)
+    
+    time_i64, err := strconv.parse_i64_maybe_prefixed(time_value)
 
+    times: [2]libc.timespec;
+    times[0] = libc.timespec{tv_sec = libc.mktime(&formatted_date), tv_nsec = 0};
+
+    //TODO: For future Windows release we have to check os.ARCH and do it like this for UNIX and another way for Windows
+    result := utimensat(AT_FDCWD, c_string(filename), &times[0], 0);
+    if result != 0 {
+        error("failed to set time");
+    }
 }
 
+validateTimeAndFormat :: proc(time_string: string) -> (libc.tm) {
+    //accept it ONLY as 2025-06-15T12:02:21 => ISO 8601
+    if len(time_string) != 19 || time_string[10] != 'T' {
+        error_arr: []string = {"Invalid timestamp ", strings.clone(time_string)};    
+        error(strings.concatenate(error_arr[:]));
+    }
+
+    seperated_date: []string = strings.split(time_string, "T");
+    date: string = seperated_date[0];
+    date_time: string = seperated_date[1];
+
+    split_date: []string = strings.split(date, "-");
+    split_datetime: []string = strings.split(date_time, ":");
+
+    tm := libc.tm{
+        tm_year = convertStringToI32(split_date[0]) - 1900,
+        tm_mon  = convertStringToI32(split_date[1]) - 1,
+        tm_mday = convertStringToI32(split_date[2]),
+        tm_hour = convertStringToI32(split_datetime[0]),
+        tm_min  = convertStringToI32(split_datetime[1]),
+        tm_sec  = convertStringToI32(split_datetime[2]),
+        tm_isdst = -1,
+    }
+
+    return tm;
+}
+
+convertStringToI32 :: proc (data: string) -> i32 {
+    converted, ok := strconv.parse_i64_maybe_prefixed(data);
+    if !ok {
+        error_arr: []string = {"Invalid number ", data};    
+        error(strings.concatenate(error_arr[:]));
+    }
+    return i32(converted);
+}
+
+utimensat :: proc(fd: i32, pathname: cstring, times: ^libc.timespec, flags: i32) -> i32
