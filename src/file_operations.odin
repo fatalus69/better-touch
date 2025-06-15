@@ -12,10 +12,7 @@ UTIME_OMIT :: -2;
 
 AT_FDCWD :: -100;
 
-Timespec :: struct {
-    tv_sec:  i64,
-    tv_nsec: i64,
-}
+utimensat :: proc(pathname: cstring, times: ^libc.timespec) -> int
 
 createFile :: proc(filename: string) {
     dir := filepath.dir(filename);
@@ -102,19 +99,18 @@ createDirectories :: proc(pathname: string) {
 }
 
 modifyAccessTime :: proc(filename: string, time_string: string) {
-    time_value: string = time_string;
-    formatted_date: libc.tm = validateTimeAndFormat(time_value)
-    
-    time_i64, err := strconv.parse_i64_maybe_prefixed(time_value)
+    error("Not implemented yet!");
+    // time_value: string = time_string;
+    // formatted_date: libc.tm = validateTimeAndFormat(time_value)
 
-    times: [2]libc.timespec;
-    times[0] = libc.timespec{tv_sec = libc.mktime(&formatted_date), tv_nsec = 0};
+    // times: [2]libc.timespec;
+    // times[0] = libc.timespec{tv_sec = libc.mktime(&formatted_date), tv_nsec = 0};
 
     //TODO: For future Windows release we have to check os.ARCH and do it like this for UNIX and another way for Windows
-    result := utimensat(AT_FDCWD, c_string(filename), &times[0], 0);
-    if result != 0 {
-        error("failed to set time");
-    }
+    // result := utimensat(cstring(alloc_cstring(filename)));
+    // if result != 0 {
+    //     error("failed to set time");
+    // }
 }
 
 validateTimeAndFormat :: proc(time_string: string) -> (libc.tm) {
@@ -152,5 +148,3 @@ convertStringToI32 :: proc (data: string) -> i32 {
     }
     return i32(converted);
 }
-
-utimensat :: proc(fd: i32, pathname: cstring, times: ^libc.timespec, flags: i32) -> i32
