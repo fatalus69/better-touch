@@ -29,12 +29,10 @@ main :: proc() {
             checkForOptions(arg);
         } else {
             filename: string = arg;
-            if access_time == true {
-                updateAccessTime(filename)
-            } else if time == true{
+            if time == true{
                 modifyAccessTime(filename, os.args[i]);
             } else {
-                createFile(filename);
+                updateAccessTime(filename);
             }
         }
     }
@@ -60,7 +58,6 @@ checkForOptions :: proc(arg: string) {
             string_arr: []string = {"Invalid option ", arg};
             error(strings.concatenate(string_arr[:]));
         }
-
         return;
     }
 
@@ -87,7 +84,6 @@ checkForOptions :: proc(arg: string) {
                 error(strings.concatenate(string_arr[:]));
             }
         }
-        return;
     }
 
     string_arr: []string = {"Invalid option ", arg};

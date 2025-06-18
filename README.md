@@ -14,8 +14,8 @@
 | `-t [time]`, `--time [time]` | Set access time using ISO 8601 format (planned feature) |
 | `-c`, `--no-create`          | Don't create the file if it doesn't exist                                       |
 
-> [!NOTE]
-> The `--time` option is currently *not implemented*, due to language-level limitations. It may be added in a future update.
+> [!CAUTION]
+> The `--time` option is currently **not implemented**, due to language-level limitations. It may be added in a future update.
 
 
 ## Installation
@@ -33,9 +33,13 @@ This installs the binary to `/usr/local/bin/` and installs the man page.
 ## Development
 - Clone the project and build the binary
 ````sh
-./build.sh
+bash build.sh
 ````
 - To build the release version simply run
 ````sh
-./build.sh --release
+bash build.sh --release
 ````
+<br>
+
+> [!NOTE]
+> This is a hobby-project and may contain bugs or incomplete features.

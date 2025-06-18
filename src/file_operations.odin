@@ -7,11 +7,6 @@ import "core:path/filepath"
 import "core:c/libc"
 import "core:strconv"
 
-UTIME_NOW  :: -1;
-UTIME_OMIT :: -2;
-
-AT_FDCWD :: -100;
-
 utimensat :: proc(pathname: cstring, times: ^libc.timespec) -> int
 
 createFile :: proc(filename: string) {
@@ -42,7 +37,7 @@ createFile :: proc(filename: string) {
         }
     
         if verbose == true {
-            fmt.println("Successfully created file", filename)
+            fmt.println("Successfully created file", filename);
         }
         defer os.close(file);
     }
@@ -51,12 +46,14 @@ createFile :: proc(filename: string) {
 updateAccessTime :: proc(filename: string) {
     if os.is_file(filename) {
         // Touch the file
-        file, err := os.open(filename);
+        file, err := os.open(filename, os.O_RDONLY | os.O_WRONLY);
+        defer os.close(file);
+        
         if err != os.ERROR_NONE {
             fmt.println("Error updating access time for", filename);
             os.exit(1);
         }
-        defer os.close(file);
+
         if verbose == true {
             fmt.println("Updated access time for", filename);
         }
@@ -100,13 +97,13 @@ createDirectories :: proc(pathname: string) {
 
 modifyAccessTime :: proc(filename: string, time_string: string) {
     error("Not implemented yet!");
-    // time_value: string = time_string;
-    // formatted_date: libc.tm = validateTimeAndFormat(time_value)
+    time_value: string = time_string;
+    formatted_date: libc.tm = validateTimeAndFormat(time_value);
 
-    // times: [2]libc.timespec;
-    // times[0] = libc.timespec{tv_sec = libc.mktime(&formatted_date), tv_nsec = 0};
+    times: [2]libc.timespec;
+    times[0] = libc.timespec{tv_sec = libc.mktime(&formatted_date), tv_nsec = 0};
 
-    //TODO: For future Windows release we have to check os.ARCH and do it like this for UNIX and another way for Windows
+    // TODO: For future Windows release we have to check os.ARCH and do it like this for UNIX and another way for Windows
     // result := utimensat(cstring(alloc_cstring(filename)));
     // if result != 0 {
     //     error("failed to set time");
@@ -135,7 +132,7 @@ validateTimeAndFormat :: proc(time_string: string) -> (libc.tm) {
         tm_min  = convertStringToI32(split_datetime[1]),
         tm_sec  = convertStringToI32(split_datetime[2]),
         tm_isdst = -1,
-    }
+    };
 
     return tm;
 }
