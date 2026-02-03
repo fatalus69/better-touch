@@ -117,7 +117,7 @@ help :: proc() {
         "\t-a, --access-time\n",
         "\t\tSet the access time to now.\n",
         "\t-t [time], --time [time]\n",
-        "\t\tNOT IMPLEMENTED YET! Set the access time to a specific time in ISO 8601 format.\n",
+        "\t\tSet the access time to a specific time in ISO 8601 format. (%Y-%m-%d %H:%M:%S)\n",
         "\t-c, --no-create\n",
         "\t\tDon't create a file if it does not exist.\n"
     );

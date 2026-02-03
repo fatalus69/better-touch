@@ -11,12 +11,8 @@
 | `-V`, `--version`            | Show the current version                                                        |
 | `-v`, `--verbose`            | Enable verbose output                                                           |
 | `-a`, `--access-time`        | Set the access time of the file to now                                          |
-| `-t [time]`, `--time [time]` | Set access time using ISO 8601 format (planned feature) |
+| `-t [time]`, `--time [time]` | Set access time using ISO 8601 format (%Y-%m-%d %H:%M:%S) |
 | `-c`, `--no-create`          | Don't create the file if it doesn't exist                                       |
-
-> [!CAUTION]
-> The `--time` option is currently **not implemented**, due to language-level limitations. It may be added in a future update.
-
 
 ## Installation
 
