@@ -3,3 +3,4 @@ better-touch
 man/*.gz
 *.tar
 *.zip
+build/
