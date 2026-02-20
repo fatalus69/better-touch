@@ -1,4 +1,4 @@
-.TH BETTER-TOUCH 1 "June 2025" "Version 1.1.0" "User Commands"
+.TH BETTER-TOUCH 1 "February 2026" "Version 1.2.0" "User Commands"
 
 .SH NAME
 better-touch \- create a file and missing directories, like touch but smarter
@@ -35,6 +35,10 @@ Set the access time to the current time.
 Set the access time to a specific time in ISO 8601 format. (%Y-%m-%d %H:%M:%S)
 
 .TP
+\fB\-m\fR \fITIME\fR, \fB\-\-modification-time\fR \fITIME\fR
+Set the access modification time to a specific time in ISO 8601 format. (%Y-%m-%d %H:%M:%S)
+
+.TP
 \fB\-c\fR, \fB\-\-no-create\fR
 Don't create a file if it does not exist. Only modify access time if the file is already present.
 
@@ -42,7 +46,7 @@ Don't create a file if it does not exist. Only modify access time if the file is
 https://github.com/fatalus69.
 
 .SH VERSION
-1.1.0
+1.2.0
 
 .SH SEE ALSO
 \fBtouch\fR(1), \fBmkdir\fR(1)

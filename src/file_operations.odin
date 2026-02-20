@@ -72,7 +72,7 @@ updateAccessTime :: proc(filename: string) {
 
 createDirectories :: proc(pathname: string) {
     parts := strings.split(pathname, string(filepath.SEPARATOR_STRING));
-    current := "";
+    current: string = "";
 
     if pathname[0] == filepath.SEPARATOR_STRING[0] {
         current = filepath.SEPARATOR_STRING;
@@ -112,6 +112,19 @@ modifyAccessTime :: proc(filename: string, time_string: string) {
     ok := setAccessTime(filename_cstr, time_string_cstr);
     if ok != 0 {
         error_arr: []string = {"Error setting access time for ", filename, " with time string ", time_string, "Please ensure the timestamp is in ISO 8601 format \"%Y-%m-%d %H:%M:%S\""};    
+        error(strings.concatenate(error_arr[:]));
+    }
+}
+
+changeModificationTime :: proc(filename: string, time_string: string) {
+    filename_cstr: cstring = strings.clone_to_cstring(filename);
+    time_string_cstr: cstring = strings.clone_to_cstring(time_string); 
+    defer delete(filename_cstr);
+    defer delete(time_string_cstr);
+
+    ok := setModificationTime(filename_cstr, time_string_cstr);
+    if ok != 0 {
+        error_arr: []string = {"Error setting modification time for ", filename, " with time string ", time_string, "Please ensure the timestamp is in ISO 8601 format \"%Y-%m-%d %H:%M:%S\""};    
         error(strings.concatenate(error_arr[:]));
     }
 }

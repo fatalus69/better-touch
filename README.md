@@ -5,14 +5,15 @@
 ## Usage
 `better-touch [OPTIONS] [FILENAME]...`
 
-| Option                       | Description                                                                     |
-| ---------------------------- | ------------------------------------------------------------------------------- |
-| `-h`, `--help`               | Show this help message and exit                                                 |
-| `-V`, `--version`            | Show the current version                                                        |
-| `-v`, `--verbose`            | Enable verbose output                                                           |
-| `-a`, `--access-time`        | Set the access time of the file to now                                          |
-| `-t [time]`, `--time [time]` | Set access time using ISO 8601 format (%Y-%m-%d %H:%M:%S) |
-| `-c`, `--no-create`          | Don't create the file if it doesn't exist                                       |
+| Option                                    | Description                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `-h`, `--help`                            | Show this help message and exit                                                 |
+| `-V`, `--version`                         | Show the current version                                                        |
+| `-v`, `--verbose`                         | Enable verbose output                                                           |
+| `-a`, `--access-time`                     | Set the access time of the file to now                                          |
+| `-t [time]`, `--time [time]`              | Set access time using ISO 8601 format (%Y-%m-%d %H:%M:%S) |
+| `-m [time]`, `--modification-time [time]` | Set access time using ISO 8601 format (%Y-%m-%d %H:%M:%S) |
+| `-c`, `--no-create`                       | Don't create the file if it doesn't exist                                       |
 
 ## Installation
 

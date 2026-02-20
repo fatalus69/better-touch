@@ -5,7 +5,7 @@ import "core:fmt"
 import "core:strings"
 import "core:path/filepath"
 
-VERSION :: "1.1.0";
+VERSION :: "1.2.0";
 NAME :: "better-touch";
 
 verbose: bool = false;
@@ -48,8 +48,10 @@ checkForOptions :: proc(arg: string) {
             os.exit(0);
         } else if arg == "--verbose" {
             verbose = true;
-        } else if arg == "--access-time" {
+        } else if arg == "--access-time" && modification_time == false {
             access_time = true;
+        } else if arg == "--modification_time" && access_time == false {
+            modification_time = true;
         } else if arg == "--time" {
             time = true;
         } else if arg == "--no-create" {
@@ -61,7 +63,7 @@ checkForOptions :: proc(arg: string) {
         return;
     }
 
-    // TODO: options that cant be together
+    // Print out error in an else case for modification and access time 
     if strings.has_prefix(arg, "-") {
         for i in 1..<len(arg) {
             switch arg[i] {
@@ -74,7 +76,13 @@ checkForOptions :: proc(arg: string) {
             case 'V':
                 verbose = true;
             case 'a':
-                access_time = true;
+                if modification_time != true {
+                    access_time = true;
+                }
+            case 'm':
+                if access_time == true {
+                    modification_time = true;
+                }
             case 't':
                 time = true;
             case 'c':
@@ -118,6 +126,8 @@ help :: proc() {
         "\t\tSet the access time to now.\n",
         "\t-t [time], --time [time]\n",
         "\t\tSet the access time to a specific time in ISO 8601 format. (%Y-%m-%d %H:%M:%S)\n",
+        "\t-m [time], --modification_time [time]\n",
+        "\t\tSet the modification time to a specific time in ISO 8601 format. (%Y-%m-%d %H:%M:%S)\n",
         "\t-c, --no-create\n",
         "\t\tDon't create a file if it does not exist.\n"
     );
