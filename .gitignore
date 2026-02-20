@@ -1,6 +1,7 @@
 better-touch
 *.exe
 man/*.gz
-*.tar
+*.tar.gz
 *.zip
 build/
+release/

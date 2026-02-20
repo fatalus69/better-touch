@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-set -e 
+set -euo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+BUILD_DIR="$PROJECT_ROOT/build"
+RELEASE_DIR="$PROJECT_ROOT/release"
+BINARY_NAME="better-touch"
+VERSION="v1.2.0"
 
 [[ -d build ]] || mkdir build
 gcc -c src/access_time/lib.c -o build/lib.o
@@ -10,33 +16,30 @@ ar rcs build/libaccesstime.a build/lib.o
 odin build src -out=build/better-touch -extra-linker-flags:"-Lbuild -laccesstime"
 # odin build src -out:better-touch.exe -target:windows_amd64
 
-# Check if build is for release
-if [[ "$*" == "--release" ]]; then
-    VERSION="v1.1.0"
-    install_files=("windows-x64" "linux-amd64")
+release=0
 
-    for type in "${install_files[@]}"; do 
-        ARCHIVE_NAME="better-touch-${type}-${VERSION}"
-        echo "Creating release archive: $ARCHIVE_NAME"
+for arg in "$@"; do
+    case "$arg" in
+        --release | -r)
+            release=1
+            ;;
+        *)
+            exit 0;
+            ;;
+    esac
+done
 
-        if [[ $type == *"linux"* ]]; then
-            # Build man page
-            gzip -k ./man/better-touch.1
+if [ "$release" -eq 1 ]; then
+    rm -rf "$RELEASE_DIR"
+    mkdir -p "$RELEASE_DIR/$BINARY_NAME-$VERSION"
 
-            # Build archive for Linux
-            tar -cf "$ARCHIVE_NAME.tar" \
-                ./build/better-touch \
-                ./installers/install.sh \
-                ./man/better-touch.1.gz
-        
-            # remove built man page
-            rm ./man/better-touch.1.gz
-        else
-            # Build archive for windows
-            zip "$ARCHIVE_NAME.zip" \
-                ./build/better-touch.exe \
-                ./installers/install.ps1 \
+    STAGING="$RELEASE_DIR/$BINARY_NAME-$VERSION"
 
-        fi
-    done
+    cp "$BUILD_DIR/$BINARY_NAME" "$STAGING/"
+    gzip -c ./man/$BINARY_NAME.1 > "$STAGING/$BINARY_NAME.1.gz"
+    cp ./installers/install.sh "$STAGING/"
+    tar -C "$RELEASE_DIR" -czf "$BINARY_NAME-linux-amd64-$VERSION.tar.gz" "$BINARY_NAME-$VERSION"
+
+    rm -rf "$RELEASE_DIR"
 fi
+
